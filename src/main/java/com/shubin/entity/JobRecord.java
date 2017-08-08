@@ -5,6 +5,7 @@ package com.shubin.entity;
  */
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.util.Date;
@@ -26,9 +27,12 @@ public class JobRecord {
     @ManyToOne
     private Employee employee;
 
+
     @ManyToOne
     private Device device;
     private Long durability;
     private Boolean active;
+
+    private float salaryRate;
 
 }

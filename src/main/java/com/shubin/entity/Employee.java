@@ -20,7 +20,7 @@ public class Employee {
     private String description;
     private String cardId;
 
-    @OneToOne
+    @Transient
     private JobRecord currentJob;
     private Float salaryRate;
 

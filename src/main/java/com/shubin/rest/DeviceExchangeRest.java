@@ -6,13 +6,17 @@ import com.shubin.entity.JobRecord;
 import com.shubin.repository.DeviceRepository;
 import com.shubin.repository.EmployeeRepository;
 import com.shubin.repository.JobRecordRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -22,67 +26,69 @@ import java.util.Objects;
 @RequestMapping("api/exchange")
 public class DeviceExchangeRest {
 
+
+    private Logger log = LoggerFactory.getLogger(DeviceExchangeRest.class);
     @Autowired
-    JobRecordRepository jobRecordRepository;
-    EmployeeRepository employeeRepository;
-    DeviceRepository deviceRepository;
+    private JobRecordRepository jobRecordRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
+    @Autowired
+    private DeviceRepository deviceRepository;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
 
     @RequestMapping()
     @ResponseBody
     public String exchange(@RequestParam("cardid") String cardId, @RequestParam("deviceid") Long deviceId) {
 
+        boolean needToUpdateMonitor = false;
         try{
             Device device = deviceRepository.findOne(deviceId);
-            if (device == null) return "nde"; //new device error
-
+            if (device == null) return "nde"; //no device error
 
             Employee employee = employeeRepository.findByCardId(cardId);
-            if(employee == null){
-                employee= new Employee();
-                employee.setCardId(cardId);
-                employee.setFirstName("Незарегистрированный работник");
-                employee.setSalaryRate(0f);
-                employee = employeeRepository.save(employee);
-
-            }
+            if(employee == null) employee=createNewEmployee(cardId);
             else {
                 JobRecord existEpmloyeeJob = jobRecordRepository.findByActiveTrueAndEmployee(employee);
-                if(existEpmloyeeJob != null)
-                    stopJob(existEpmloyeeJob);
-
+                if(existEpmloyeeJob != null) {
+                    if(!Objects.equals(device.getId(), existEpmloyeeJob.getDevice().getId())) {
+                        stopJob(existEpmloyeeJob);
+                        needToUpdateMonitor = true;
+                    }
+                }
             }
 
-
-            JobRecord jobRecord=jobRecordRepository.findByActiveTrueAndDevice(device);
+            JobRecord jobRecord = jobRecordRepository.findByActiveTrueAndDevice(device);
             if (jobRecord != null) {
                if(Objects.equals(employee.getCardId(), jobRecord.getEmployee().getCardId())) {
                    jobRecord.setLastExchange(new Date());
                }
                else{
-                   return "dbe "+ "Устройство занято " + jobRecord.getEmployee().getFirstName(); //device deasy error
+                   log.info("Попытка работы с занятым устройством");
+                   return "dbe "+ "Устройство занято " + jobRecord.getEmployee().getFirstName();//device busy error}
                }
-
             }
+
             else{
-                jobRecord=new JobRecord();
-                jobRecord.setActive(true);
-                jobRecord.setDevice(device);
-                jobRecord.setEmployee(employee);
-                jobRecord.setStartDate(new Date());
-                jobRecord.setLastExchange(new Date());
+                jobRecord = createNewJob(device,employee);
+                needToUpdateMonitor=true;
             }
 
             Long sec = (new Date().getTime() - jobRecord.getStartDate().getTime())/1000;
             jobRecord.setDurability(sec);
-            jobRecordRepository.save(jobRecord);
+            jobRecord = jobRecordRepository.save(jobRecord);
+
+            if (needToUpdateMonitor) updateMonitor();
 
             Long min = sec/60;
             sec = sec%60;
+
             return jobRecord.getEmployee().getLastName()+" "+min+":"+sec;
         }
         catch (Exception ex){
-            System.out.print("Ошибка старта работы " + ex);
+            log.error("Ошибка старта работы " + ex);
             return "err Ошибка сервера";
         }
     }
@@ -93,13 +99,14 @@ public class DeviceExchangeRest {
         Device device = new Device();
         device.setName("Новое устройство");
         device = deviceRepository.save(device);
+        updateMonitor();
         return device.getId()+"";
 
     }
 
-    @RequestMapping("/stopJob")
+    @RequestMapping("/stop")
     @ResponseBody
-    public String stopJob(@RequestParam("cardid") String cardId, @RequestParam("deviceid") Long deviceId) {
+    public String stopJob(@RequestParam("deviceid") Long deviceId) {
 
         try{
             Device device = deviceRepository.findOne(deviceId);
@@ -107,6 +114,8 @@ public class DeviceExchangeRest {
             jobRecord = stopJob(jobRecord);
             Long min = jobRecord.getDurability()/60;
             Long sec = jobRecord.getDurability()%60;
+            updateMonitor();
+            log.info("Работа "+jobRecord.getId()+ " остановлена рест сервисом");
             return "ok1 Завершено дл:"+min+":"+sec;
         }catch (Exception ex){
             return "err";
@@ -118,9 +127,39 @@ public class DeviceExchangeRest {
         jobRecord.setLastExchange(new Date());
         jobRecord.setStopDate(new Date());
         jobRecord.setActive(false);
+        jobRecord.setSalaryRate(jobRecord.getEmployee().getSalaryRate());
         Long sec = (new Date().getTime() - jobRecord.getStartDate().getTime())/1000;
         jobRecord.setDurability(sec);
         jobRecord = jobRecordRepository.save(jobRecord);
         return jobRecord;
+    }
+
+    void updateMonitor (){
+        List<Device> deviceList = deviceRepository.findAll();
+        deviceList.forEach(device->{
+            JobRecord jobRecord = jobRecordRepository.findByActiveTrueAndDevice(device);
+            device.setCurrentJob(jobRecord);
+        });
+        simpMessagingTemplate.convertAndSend("/topic/monitorUpdate", deviceList);
+
+    }
+    JobRecord createNewJob (Device device, Employee employee){
+        JobRecord jobRecord=new JobRecord();
+        jobRecord.setActive(true);
+        jobRecord.setDevice(device);
+        jobRecord.setEmployee(employee);
+        jobRecord.setStartDate(new Date());
+        jobRecord.setLastExchange(new Date());
+        return jobRecord;
+    }
+
+    Employee createNewEmployee (String cardId){
+        Employee employee= new Employee();
+        employee.setCardId(cardId);
+        employee.setFirstName("Незарегистрированный работник");
+        employee.setSalaryRate(0f);
+        employee = employeeRepository.save(employee);
+        return employee;
+
     }
 }

@@ -19,6 +19,6 @@ public class Device {
     private String mac;
     private String ip;
 
-    @OneToOne
+    @Transient
     private JobRecord currentJob;
 }
