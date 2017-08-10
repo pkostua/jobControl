@@ -33,6 +33,7 @@ public class JobRecord {
     private Long durability;
     private Boolean active;
 
-    private float salaryRate;
+    private Float difficult;
+    private Float salaryRate;
 
 }

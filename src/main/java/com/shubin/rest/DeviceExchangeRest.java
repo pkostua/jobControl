@@ -108,7 +108,7 @@ public class DeviceExchangeRest {
     @ResponseBody
     public String stopJob(@RequestParam("deviceid") Long deviceId) {
 
-        try{
+        //try{
             Device device = deviceRepository.findOne(deviceId);
             JobRecord jobRecord= jobRecordRepository.findByActiveTrueAndDevice(device);
             jobRecord = stopJob(jobRecord);
@@ -117,9 +117,9 @@ public class DeviceExchangeRest {
             updateMonitor();
             log.info("Работа "+jobRecord.getId()+ " остановлена рест сервисом");
             return "ok1 Завершено дл:"+min+":"+sec;
-        }catch (Exception ex){
-            return "err";
-        }
+        //}catch (Exception ex){
+         //   return "err  " + ex;
+        //}
     }
 
     JobRecord stopJob(JobRecord jobRecord){
@@ -138,6 +138,8 @@ public class DeviceExchangeRest {
         List<Device> deviceList = deviceRepository.findAll();
         deviceList.forEach(device->{
             JobRecord jobRecord = jobRecordRepository.findByActiveTrueAndDevice(device);
+            if (jobRecord != null)
+                jobRecord.setDevice(null);
             device.setCurrentJob(jobRecord);
         });
         simpMessagingTemplate.convertAndSend("/topic/monitorUpdate", deviceList);
