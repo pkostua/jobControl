@@ -1,0 +1,25 @@
+<div id="card-container" style="background-color: aliceblue">
+<br>
+  <md-card *ngFor="let device of devices" style="width: 300px;height: 180px">
+    <md-card-header>
+      <div md-card-avatar>
+        <md-icon *ngIf="device.currentJob != null">play_circle_outline</md-icon>
+        <md-icon *ngIf="device.currentJob == null">pause_circle_outline</md-icon>
+      </div>
+      <md-card-title><a md-button (click)="gotoDevice(device.id)">{{device.name}}</a></md-card-title>
+      <md-card-subtitle>{{device.description}}</md-card-subtitle>
+    </md-card-header>
+    <md-card-content *ngIf="device.currentJob != null">
+      <a md-button (click)="gotoEmployee(device.currentJob.employee.id)">{{device.currentJob.employee.firstName}} {{device.currentJob.employee.lastName}}</a>
+      <br>
+      <div style="font-size: 35px" align="center">
+        {{device.currentJob.hour}}:{{device.currentJob.min}}:{{device.currentJob.sec}}
+      </div>
+    </md-card-content>
+    <md-card-actions>
+      <div align="center">
+        <button md-raised-button color="primary" *ngIf="device.currentJob != null">Остановить</button>
+      </div>
+    </md-card-actions>
+  </md-card>
+</div>

@@ -1,0 +1,13 @@
+md-card {
+
+  margin: 4px;
+}
+
+#card-container {
+  display: flex;
+  flex-flow: row wrap;
+}
+#card-container2 {
+  display: flex;
+  flex-flow: row wrap;
+}
