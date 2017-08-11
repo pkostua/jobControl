@@ -1,3 +1,37 @@
-<p>
-  device works!
-</p>
+<br>
+<div class="example-container mat-elevation-z8">
+  <md-table #table [dataSource]="dataSource">
+
+    <ng-container cdkColumnDef="Id">
+      <md-header-cell *cdkHeaderCellDef> ID </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="name">
+      <md-header-cell *cdkHeaderCellDef> ИМЯ </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.name}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="difficult">
+      <md-header-cell *cdkHeaderCellDef> Сложность </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.difficult}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="workTime">
+      <md-header-cell *cdkHeaderCellDef>Время работы</md-header-cell>
+      <md-cell *cdkCellDef="let row" > {{row.workTime}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="edit">
+      <md-header-cell *cdkHeaderCellDef> </md-header-cell>
+      <md-cell *cdkCellDef="let row" >
+        <button  md-mini-fab (click)="gotoEdit(row.id)" mdTooltip="Изменить" style="margin-left: 10px"> <md-icon>edit</md-icon></button>
+        <button  md-mini-fab (click)="deleteDevice(row.id)" mdTooltip="Удалить" style="margin-left: 10px" > <md-icon>remove</md-icon></button>
+      </md-cell>
+    </ng-container>
+
+
+    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>
+  </md-table>
+</div>

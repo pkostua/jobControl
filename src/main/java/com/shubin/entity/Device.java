@@ -18,6 +18,8 @@ public class Device {
     private String description;
     private String mac;
     private String ip;
+    private Float difficult;
+    private Long workTime;
 
     @Transient
     private JobRecord currentJob;

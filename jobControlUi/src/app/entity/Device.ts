@@ -11,4 +11,6 @@ export class Device{
   mac:string;
   ip:string;
   currentJob:Job;
+  difficult:number;
+  workTime:number;
 }

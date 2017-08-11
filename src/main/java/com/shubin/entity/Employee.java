@@ -3,6 +3,9 @@ package com.shubin.entity;
 import javax.persistence.*;
 
 import lombok.Data;
+
+import java.util.List;
+
 /**
  * Created by vitaly on 07.08.17.
  */
@@ -19,6 +22,9 @@ public class Employee {
     private String role;
     private String description;
     private String cardId;
+
+    @OneToMany
+    private List<Device> allowDevices;
 
     @Transient
     private JobRecord currentJob;

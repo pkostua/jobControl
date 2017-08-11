@@ -8,6 +8,7 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import {Http, Response} from "@angular/http";
 import {Subscription} from "rxjs/Subscription";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -23,7 +24,8 @@ export class MonitorComponent implements OnInit {
   private timer;
   private sub: Subscription;
 
-  constructor(@Inject(Http) public http: Http) {
+  constructor(@Inject(Http) public http: Http,
+              @Inject(Router) public router: Router,) {
 
   }
 
@@ -72,6 +74,10 @@ export class MonitorComponent implements OnInit {
     return this.http.get("api/monitor")
       .map((res: Response) => {return res.json();})
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+  }
+  gotoDevice(id:number){
+
+    this.router.navigate(['/deviceEdit', id]);
   }
 
 }

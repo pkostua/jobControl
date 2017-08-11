@@ -32,9 +32,9 @@ public class DeviceRest {
         return devices;
     }
     @RequestMapping(method = RequestMethod.POST)
-    public String save (@RequestBody Device device){
-        deviceRepository.save(device);
-        return "OK";
+    public Device save (@RequestBody Device device){
+        Device newDevice =  deviceRepository.save(device);
+        return newDevice;
     }
 
     @RequestMapping(method = RequestMethod.DELETE)

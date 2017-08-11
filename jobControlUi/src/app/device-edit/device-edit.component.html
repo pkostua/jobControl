@@ -1,0 +1,37 @@
+<md-card style="width: 350px">
+  <md-card-header>
+    Устройство номер {{id}}
+  </md-card-header>
+  <br/>
+  <br/>
+
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Имя" [(ngModel)]="device.name" name="name">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Описание" [(ngModel)]="device.description" name="description">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="IP" [(ngModel)]="device.ip" name="ip">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="MAC" [(ngModel)]="device.mac" name="mac">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 100px">
+    <input mdInput placeholder="Сложность" [(ngModel)]="device.difficult" name="difficult">
+  </md-input-container>
+  <br/>
+
+
+</md-card>
+
+<md-card style="width: 350px">
+  <div align="center">
+    <button md-raised-button (click) = "goBack()" color="primary">Назад</button>
+    <button md-raised-button (click) = "saveDevice()" color="primary">Сохранить</button>
+  </div>
+</md-card>

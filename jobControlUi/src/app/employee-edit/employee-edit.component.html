@@ -1,0 +1,32 @@
+<md-card style="width: 350px">
+  <md-card-header>
+    Работник номер номер {{id}}
+  </md-card-header>
+  <br/>
+  <br/>
+
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Имя" [(ngModel)]="employee.firstName" name="firstName">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Фамилия" [(ngModel)]="employee.lastName" name="lastName">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Должность" [(ngModel)]="employee.role" name="role">
+  </md-input-container>
+  <br/>
+  <md-input-container style="width: 300px">
+    <input mdInput placeholder="Ставка" [(ngModel)]="employee.salaryRate" name="salaryRate">
+  </md-input-container>
+  <br/>
+
+</md-card>
+
+<md-card style="width: 350px">
+  <div align="center">
+    <button md-raised-button (click) = "goBack()" color="primary">Назад</button>
+    <button md-raised-button (click) = "saveDevice()" color="primary">Сохранить</button>
+  </div>
+</md-card>

@@ -36,10 +36,11 @@ import {
   MdTooltipModule,
 } from '@angular/material';
 import {NgModule} from "@angular/core";
-
+import {CdkTableModule} from '@angular/cdk';
 
 @NgModule({
   exports: [
+    CdkTableModule,
     //MdAutocompleteModule,
     MdButtonModule,
     MdButtonToggleModule,

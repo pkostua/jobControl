@@ -7,14 +7,19 @@ import {MonitorComponent} from "./monitor/monitor.component";
 import {DeviceComponent} from "./device/device.component";
 import {EmployeeComponent} from "./employee/employee.component";
 import {JobComponent} from "./job/job.component";
+import {DeviceEditComponent} from "./device-edit/device-edit.component";
+import {EmployeeEditComponent} from "./employee-edit/employee-edit.component";
 
 
 export const routes: Routes = [
    { path: '', component: MonitorComponent},
    { path: 'monitor', component: MonitorComponent},
    { path: 'device', component: DeviceComponent},
-  { path: 'employee', component: EmployeeComponent},
-  { path: 'job', component: JobComponent},
+   { path: 'employee', component: EmployeeComponent},
+   { path: 'job', component: JobComponent},
+
+   { path: 'deviceEdit/:id', component: DeviceEditComponent},
+   { path: 'employeeEdit/:id', component: EmployeeEditComponent},
 
 
 

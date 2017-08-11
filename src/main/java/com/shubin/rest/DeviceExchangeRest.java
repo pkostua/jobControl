@@ -98,6 +98,7 @@ public class DeviceExchangeRest {
     public String newDevice() {
         Device device = new Device();
         device.setName("Новое устройство");
+        device.setDifficult(1f);
         device = deviceRepository.save(device);
         updateMonitor();
         return device.getId()+"";

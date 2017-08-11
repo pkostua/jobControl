@@ -1,3 +1,43 @@
-<p>
-  employee works!
-</p>
+<br>
+<div class="example-container mat-elevation-z8">
+  <md-table #table [dataSource]="dataSource">
+
+    <ng-container cdkColumnDef="Id">
+      <md-header-cell *cdkHeaderCellDef> ID </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.id}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="firstName">
+      <md-header-cell *cdkHeaderCellDef> ИМЯ </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.firstName}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="lastName">
+      <md-header-cell *cdkHeaderCellDef> Фамилия </md-header-cell>
+      <md-cell *cdkCellDef="let row"> {{row.lastName}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="role">
+      <md-header-cell *cdkHeaderCellDef>Должность</md-header-cell>
+      <md-cell *cdkCellDef="let row" > {{row.role}} </md-cell>
+    </ng-container>
+
+
+    <ng-container cdkColumnDef="salaryRate">
+      <md-header-cell *cdkHeaderCellDef>Ставка</md-header-cell>
+      <md-cell *cdkCellDef="let row" > {{row.salaryRate}} </md-cell>
+    </ng-container>
+
+    <ng-container cdkColumnDef="edit">
+      <md-header-cell *cdkHeaderCellDef> </md-header-cell>
+      <md-cell *cdkCellDef="let row" >
+        <button  md-mini-fab (click)="gotoEdit(row.id)" mdTooltip="Изменить" style="margin-left: 10px"> <md-icon>edit</md-icon></button>
+        <button  md-mini-fab (click)="deleteDevice(row.id)" mdTooltip="Удалить" style="margin-left: 10px" > <md-icon>remove</md-icon></button>
+      </md-cell>
+    </ng-container>
+
+
+    <md-header-row *cdkHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *cdkRowDef="let row; columns: displayedColumns;"></md-row>
+  </md-table>
+</div>
